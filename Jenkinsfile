@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKER_IMAGE = 'amazon-app'
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -14,15 +18,22 @@ pipeline {
             }
         }
 
+        stage('Copy WAR to Root') {
+            steps {
+                sh 'cp Amazon/Amazon-Web/target/Amazon.war .'
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t amazon-app .'
+                sh 'docker build -t ${DOCKER_IMAGE} .'
             }
         }
 
         stage('Run Docker Container') {
             steps {
-                sh 'docker run -d -p 8080:8080 --name amazon amazon-app'
+                sh 'docker rm -f amazon-container || true'
+                sh 'docker run -d --name amazon-container -p 8080:8080 ${DOCKER_IMAGE}'
             }
         }
     }
