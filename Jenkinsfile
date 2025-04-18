@@ -21,7 +21,7 @@ pipeline {
         stage('Copy WAR') {
             steps {
                 // Adjust WAR path if it's different
-                sh 'cp Amazon/target/*.war Amazon.war'
+                sh 'cp Amazon/Amazon-Web/target/Amazon.war Amazon.war'
             }
         }
 
