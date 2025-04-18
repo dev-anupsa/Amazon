@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         DOCKER_IMAGE = 'amazon-app'
+        LOGS_DIR = '/usr/local/tomcat/logs' // Tomcat's default logs dir
     }
 
     stages {
@@ -20,7 +21,6 @@ pipeline {
 
         stage('Copy WAR') {
             steps {
-                // Adjust WAR path if it's different
                 sh 'cp Amazon/Amazon-Web/target/Amazon.war Amazon.war'
             }
         }
@@ -35,7 +35,11 @@ pipeline {
             steps {
                 sh '''
                 docker rm -f amazon-container || true
-                docker run -d --name amazon-container -p 8900:8080 ${DOCKER_IMAGE}
+                docker volume create amazon-tomcat-logs || true
+                docker run -d --name amazon-container \
+                    -p 8900:8080 \
+                    -v amazon-tomcat-logs:/usr/local/tomcat/logs \
+                    ${DOCKER_IMAGE}
                 '''
             }
         }
