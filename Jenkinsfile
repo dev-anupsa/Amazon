@@ -56,10 +56,13 @@ pipeline {
             steps {
                 sh '''
                 docker rm -f amazon-container || true
+                docker volume create amazon-tomcat-logs || true
                 docker run -d --name amazon-container -p 8900:8080 \
                     -v amazon-tomcat-logs:/usr/local/tomcat/logs \
                     ${ACR_IMAGE}
                 '''
             }
         }
+    }
+}
 
